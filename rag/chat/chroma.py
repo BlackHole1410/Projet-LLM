@@ -11,7 +11,7 @@ def Querry(query):
     # switch `create_collection` to `get_or_create_collection` to avoid creating a new collection every time
     collection = chroma_client.get_or_create_collection(
     name="my_collection", 
-    embedding_function=embeddings(doc))
+    embedding_function=embeddings(doc('../../documents')))
 
     # List of documents
     documents = doc
@@ -21,7 +21,7 @@ def Querry(query):
 
     # switch `add` to `upsert` to avoid adding the same documents every time
     collection.upsert(
-        documents=doc,
+        documents=doc('../../documents'),
         ds=document_ids
     )
     results = collection.query(
