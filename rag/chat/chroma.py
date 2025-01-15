@@ -1,6 +1,6 @@
 import chromadb
 import uuid
-from rag.indexing.contrat_text import doc
+from rag.indexing.contrat_to_dico import get_contrat
 from sentence_transformers import SentenceTransformer
 
 def Querry(query):
@@ -13,14 +13,14 @@ def Querry(query):
     )
 
     # List of documents
-    documents = doc
+    document = get_contrat('../../documents')
 
     # Generate unique IDs for the documents based on the length of the documents list
-    document_ids = [str(uuid.uuid4()) for _ in range(len(documents))]
+    document_ids = [str(uuid.uuid4()) for _ in range(len(document))]
 
     # Use `upsert` to avoid adding the same documents every time
     collection.upsert(
-        documents=doc('../../documents'),
+        documents=document,
         ids=document_ids
     )
     results = collection.query(
