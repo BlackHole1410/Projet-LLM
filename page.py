@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+from rag.chat.chroma import Querry  # Importer la fonction Querry depuis chroma.py
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -24,7 +25,12 @@ else:
 
     # Fonction pour formater le prompt
     def format_prompt(question: str) -> str:
-        return f"Question: {question}\nRéponse:"
+        # Appel à la fonction Querry pour obtenir le contexte
+        context_results = Querry(question)  # Obtenir les résultats de la requête
+        context = context_results["documents"][0][0] if context_results["documents"] else "Aucun contexte trouvé."
+
+        # Formater le prompt avec la question et le contexte
+        return f"Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte suivants récupérés pour répondre à la question. Si vous ne connaissez pas la réponse, dites simplement que vous ne la connaissez pas. Utilisez trois phrases maximum et gardez la réponse concise. Question: {question}. Contexte : {context}. Réponse:"
 
     # Fonction pour générer une réponse en utilisant l'API Google Gemini
     def generate_answer(formatted_prompt: str) -> str:
@@ -53,7 +59,7 @@ else:
     if prompt:
         st.write(f"Question posée : {prompt}")
 
-        # Étape 1: Formatage du prompt
+        # Étape 1: Formatage du prompt avec le contexte récupéré
         formatted_prompt = format_prompt(prompt)
 
         # Étape 2: Génération de la réponse avec Google Gemini

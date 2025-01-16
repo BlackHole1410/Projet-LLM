@@ -49,4 +49,4 @@ def Querry(query):
     return results
 
 # Example usage
-Querry('Donne moi un document sur les dégats des eaux')
+#Querry('Donne moi un document sur les dégats des eaux')
