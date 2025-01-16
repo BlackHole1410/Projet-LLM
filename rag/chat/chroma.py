@@ -4,15 +4,9 @@ import uuid
 from ..indexing.contrat_to_dico import get_contrat_from_file
 from chromadb.utils import embedding_functions
 
-def Querry(query):
+def dict_to_chroma():
     """
-    Executes a query on a Chroma collection and returns the results.
-
-    Args:
-        query (str): The query text to search for.
-
-    Returns:
-        list: A list of query results.
+    Inserts documents into a Chroma collection.
     """
     chroma_client = chromadb.Client()
     documents_dir = './documents'
@@ -40,13 +34,34 @@ def Querry(query):
         ids=ids
     )
 
+def chroma_query(query):
+    """
+    Executes a query on a Chroma collection and returns the results.
+
+    Args:
+        query (str): The query text to search for.
+
+    Returns:
+        list: A list of query results.
+    """
+    chroma_client = chromadb.Client()
+    sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+        model_name="HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1"
+    )
+
+    collection = chroma_client.get_or_create_collection(
+        name="my_collection", 
+        embedding_function=sentence_transformer_ef
+    )
+
     results = collection.query(
         query_texts=[query],
-        n_results=1
+        n_results=2
     )
 
     print("First document:", results["documents"][0][0])
     return results
 
 # Example usage
-Querry('Donne moi un document sur les dégats des eaux')
+# dict_to_chroma()
+# chroma_query('Donne moi un document sur les dégats des eaux')
