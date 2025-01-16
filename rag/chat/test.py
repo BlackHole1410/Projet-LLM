@@ -33,4 +33,5 @@ results = collection.query(
         query_texts=["This is a query document about florida"], # Chroma will embed this for you
         n_results=1 # how many results to return
     )
+print("First document:", results["documents"][0][0])
 print(results)
