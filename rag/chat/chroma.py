@@ -45,7 +45,7 @@ def Querry(query):
         n_results=1
     )
 
-    print("First document:", results["documents"][0][0])
+    # print("First document:", results["documents"][0][0])
     return results
 
 # Example usage
