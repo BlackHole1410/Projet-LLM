@@ -1,14 +1,17 @@
 import chromadb
 import uuid
 from sentence_transformers import SentenceTransformer
+from chromadb.utils import embedding_functions
 
 
 chroma_client = chromadb.Client()
+sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1")
 
 # switch `create_collection` to `get_or_create_collection` to avoid creating a new collection every time
 collection = chroma_client.get_or_create_collection(
         name="my_collection", 
-        embedding_function= SentenceTransformer('HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1.5')
+        embedding_function= sentence_transformer_ef
     )
 
 # List of documents
