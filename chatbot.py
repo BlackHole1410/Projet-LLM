@@ -48,7 +48,17 @@ if prompt:
 
     # Query ChromaDB for context
     context = chroma_query(prompt)
-
+        
+    titles = []
+    for document in context.get("documents", [[]])[0]:
+        try:
+            # Convertir le document en dictionnaire
+            doc_data = eval(document)
+            if "title" in doc_data:
+                titles.append(doc_data["title"])
+        except Exception as e:
+            print(f"Erreur lors de l'extraction du titre : {e}")
+            
     # Generate answer using Google Gemini
     genai.configure(api_key=api_key)
     formatted_prompt = format_prompt(prompt, context)
@@ -62,4 +72,4 @@ if prompt:
 
     # Append assistant's response to session state and display it
     st.session_state["messages"].append({"role": "assistant", "content": response.text})
-    st.chat_message("assistant").write(response.text)
+    st.chat_message("assistant").write(response.text + f"Cette information vient du document : {titles[0]}")
