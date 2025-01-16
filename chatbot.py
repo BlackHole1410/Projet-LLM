@@ -7,13 +7,26 @@ from rag.chat.chroma import dict_to_chroma, chroma_query
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=api_key)
 
 # Configure Streamlit page
 st.title("💬 Chatbot RAG - Contrats d'Assurances")
 st.caption("Posez vos questions sur les documents.")
 
-# Initialize ChromaDB once during app startup
+# Initialize ChromaDB
 dict_to_chroma()
+
+# Sidebar for file upload
+with st.sidebar:
+    uploaded_file = st.file_uploader("Choisissez un document HTML", type=["html"], accept_multiple_files=False)
+    if uploaded_file:
+        bytes_data = uploaded_file.read()
+        file_path = os.path.join('./documents', uploaded_file.name)
+        with open(file_path, 'wb') as f:
+            f.write(bytes_data)
+        st.write("Fichier téléchargé et enregistré sous :", uploaded_file.name)
+        # Reinitialize ChromaDB with the new document
+        dict_to_chroma()
 
 # Initialize session state for messages if not present
 if "messages" not in st.session_state:
@@ -50,16 +63,16 @@ if prompt:
     context = chroma_query(prompt)
 
     # Generate answer using Google Gemini
-    genai.configure(api_key=api_key)
     formatted_prompt = format_prompt(prompt, context)
 
     try:
         # Generate a response
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(formatted_prompt)
+        answer = response.choices[0].text if response.choices else "Je ne sais pas."
     except Exception as e:
-        response = f"Erreur lors de la génération de la réponse : {e}"
+        answer = f"Erreur lors de la génération de la réponse : {e}"
 
     # Append assistant's response to session state and display it
-    st.session_state["messages"].append({"role": "assistant", "content": response.text})
-    st.chat_message("assistant").write(response.text)
+    st.session_state["messages"].append({"role": "assistant", "content": answer})
+    st.chat_message("assistant").write(answer)
