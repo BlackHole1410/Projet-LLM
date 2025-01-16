@@ -41,8 +41,8 @@ if prompt:
         return (
             f"You are an assistant for question-answering tasks. "
             f"Use the following pieces of retrieved context to answer the question. "
-            f"If you don't know the answer, just say that you don't know. "
-            f"Use three sentences maximum and keep the answer concise. "
+            f"If you don't know the answer, just say 'Je ne sais pas.'. "
+            f"Use up to three sentences maximum if needed, otherwise use less. Keep the answer concise. "
             f"Question: {question}. Context: {context}."
         )
 

@@ -61,7 +61,3 @@ def chroma_query(query):
 
     print("First document:", results["documents"][0][0])
     return results
-
-# Example usage
-# dict_to_chroma()
-# chroma_query('Donne moi un document sur les dégats des eaux')
