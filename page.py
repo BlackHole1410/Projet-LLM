@@ -25,6 +25,7 @@ else:
 
     # Fonction pour formater le prompt
     def format_prompt(question: str) -> str:
+
         # Appel à la fonction Querry pour obtenir le contexte
         context_results = Querry(question)  # Obtenir les résultats de la requête
         context = context_results["documents"][0][0] if context_results["documents"] else "Aucun contexte trouvé."
@@ -34,26 +35,7 @@ else:
 
     # Fonction pour générer une réponse en utilisant l'API Google Gemini
     def generate_answer(formatted_prompt: str) -> str:
-        try:
-            # Récupérer le modèle Gemini supporté pour la génération de contenu
-            model = genai.GenerativeModel('gemini-pro')
-
-            # Initialiser le chat avec un historique vide
-            chat = model.start_chat(history=[])
-
-            # Envoi du message et récupération de la réponse
-            response = chat.send_message(formatted_prompt, stream=True)
-
-            # Traitement de la réponse en streaming
-            answer = ""
-            for chunk in response:
-                if chunk.text:
-                    answer += chunk.text
-
-            return answer.strip()
-        except Exception as e:
-            st.error(f"Erreur lors de la génération de la réponse : {e}")
-            return "Erreur lors de la génération de la réponse."
+        return "Réponse générée par Google Gemini"  # Placeholder response
 
     # Si une question est posée
     if prompt:
@@ -62,7 +44,13 @@ else:
         # Étape 1: Formatage du prompt avec le contexte récupéré
         formatted_prompt = format_prompt(prompt)
 
-        # Étape 2: Génération de la réponse avec Google Gemini
+        # Étape 2: Utilisation de la fonction Querry pour obtenir des résultats
+        query_results = Querry(formatted_prompt)
+
+        # Affichage des résultats de la requête
+        st.write("Résultats de la requête :", query_results)
+
+        # Étape 3: Génération de la réponse avec Google Gemini
         answer = generate_answer(formatted_prompt)
 
         # Affichage de la réponse générée
