@@ -5,12 +5,15 @@ import google.generativeai as genai
 from rag.chat.chroma import dict_to_chroma, chroma_query
 
 # Load environment variables
+
+st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
 # Configure Streamlit page
 st.title("💬 Chatbot RAG - Contrats d'Assurances")
 st.caption("Posez vos questions sur les documents.")
+
 
 # Initialize ChromaDB once during app startup
 dict_to_chroma()
@@ -70,6 +73,9 @@ if prompt:
     except Exception as e:
         response = f"Erreur lors de la génération de la réponse : {e}"
 
-    # Append assistant's response to session state and display it
+    # Append assistant's response to session state and display it with hyperlink
+    file_link = f'<a href="{titles[0].replace(" ", "_")}" target="_blank">{titles[0].replace(" ", "_")}</a>'
     st.session_state["messages"].append({"role": "assistant", "content": response.text})
-    st.chat_message("assistant").write(response.text + f"Cette information vient du document : {titles[0]}")
+    st.chat_message("assistant").markdown(
+        response.text + f" Cette information vient du document : {file_link}", unsafe_allow_html=True
+)
