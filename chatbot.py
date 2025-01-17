@@ -5,6 +5,8 @@ import google.generativeai as genai
 from rag.chat.chroma import dict_to_chroma, chroma_query
 
 # Load environment variables
+
+st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
@@ -12,8 +14,21 @@ api_key = os.getenv("GEMINI_API_KEY")
 st.title("💬 Chatbot RAG - Contrats d'Assurances")
 st.caption("Posez vos questions sur les documents.")
 
+
 # Initialize ChromaDB once during app startup
 dict_to_chroma()
+
+# Sidebar for file upload
+with st.sidebar:
+    uploaded_file = st.file_uploader("Choisissez un document HTML", type=["html"], accept_multiple_files=False)
+    if uploaded_file:
+        bytes_data = uploaded_file.read()
+        file_path = os.path.join('./documents', uploaded_file.name)
+        with open(file_path, 'wb') as f:
+            f.write(bytes_data)
+        st.write("Fichier téléchargé et enregistré sous :", uploaded_file.name)
+        # Reinitialize ChromaDB with the new document
+        dict_to_chroma()
 
 # Initialize session state for messages if not present
 if "messages" not in st.session_state:
@@ -48,7 +63,17 @@ if prompt:
 
     # Query ChromaDB for context
     context = chroma_query(prompt)
-
+        
+    titles = []
+    for document in context.get("documents", [[]])[0]:
+        try:
+            # Convertir le document en dictionnaire
+            doc_data = eval(document)
+            if "title" in doc_data:
+                titles.append(doc_data["title"])
+        except Exception as e:
+            print(f"Erreur lors de l'extraction du titre : {e}")
+            
     # Generate answer using Google Gemini
     genai.configure(api_key=api_key)
     formatted_prompt = format_prompt(prompt, context)
@@ -60,6 +85,8 @@ if prompt:
     except Exception as e:
         response = f"Erreur lors de la génération de la réponse : {e}"
 
-    # Append assistant's response to session state and display it
+    # Append assistant's response to session state and display it with hyperlink
     st.session_state["messages"].append({"role": "assistant", "content": response.text})
-    st.chat_message("assistant").write(response.text)
+    st.chat_message("assistant").markdown(
+        response.text + f"\n **Source : {titles[0]}**", unsafe_allow_html=True
+)

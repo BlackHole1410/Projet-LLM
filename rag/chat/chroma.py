@@ -1,5 +1,6 @@
 import os
 import chromadb
+from chromadb.config import Settings
 import uuid
 from ..indexing.contrat_to_dico import get_contrat_from_file
 from chromadb.utils import embedding_functions
@@ -58,6 +59,4 @@ def chroma_query(query):
         query_texts=[query],
         n_results=2
     )
-
-    print("First document:", results["documents"][0][0])
     return results
