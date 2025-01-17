@@ -18,6 +18,18 @@ st.caption("Posez vos questions sur les documents.")
 # Initialize ChromaDB once during app startup
 dict_to_chroma()
 
+# Sidebar for file upload
+with st.sidebar:
+    uploaded_file = st.file_uploader("Choisissez un document HTML", type=["html"], accept_multiple_files=False)
+    if uploaded_file:
+        bytes_data = uploaded_file.read()
+        file_path = os.path.join('./documents', uploaded_file.name)
+        with open(file_path, 'wb') as f:
+            f.write(bytes_data)
+        st.write("Fichier téléchargé et enregistré sous :", uploaded_file.name)
+        # Reinitialize ChromaDB with the new document
+        dict_to_chroma()
+
 # Initialize session state for messages if not present
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
