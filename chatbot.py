@@ -11,8 +11,6 @@ from rag.indexing.embedding import dict_to_chroma
 from streamlit_feedback import streamlit_feedback
 
 # Load environment variables
-
-st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
