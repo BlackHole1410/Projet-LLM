@@ -43,19 +43,64 @@ if "chat_history" not in st.session_state:
 if "fbk" not in st.session_state:
     st.session_state["fbk"] = str(uuid.uuid4())  # Unique key for feedback component
 
+import json
+
+# Function to save feedback to JSON
+def save_feedback_to_json(feedback_score, filename="feedback.json"):
+    """Save the feedback score (emoji) to a JSON file."""
+    try:
+        # Check if the file exists
+        if os.path.exists(filename):
+            # Load existing data from the JSON file
+            with open(filename, "r") as json_file:
+                data = json.load(json_file)
+        else:
+            # Create a new list if the file does not exist
+            data = []
+
+        # Append the new feedback score (emoji)
+        data.append(feedback_score)
+
+        # Save updated data to the JSON file
+        with open(filename, "w") as json_file:
+            json.dump(data, json_file, indent=4)
+    except Exception as e:
+        print(f"Error saving to JSON: {e}")
+
 # Function to handle feedback submission
 def handle_feedback(feedback_response):
-    """Update the chat history with feedback and log only the score to the terminal."""
+    """Update the chat history with feedback and save only the emoji to a JSON file."""
     if st.session_state["chat_history"]:  # Ensure history exists
-        last_entry = st.session_state["chat_history"][-1]  # Get the last message
-        last_entry.update({"feedback": feedback_response["score"]})  # Add feedback score to the last message
-        st.session_state["chat_history"][-1] = last_entry  # Update session state
-        
-        # Log only the score to the terminal/command prompt
-        print(f"Feedback score received: {feedback_response['score']}")
-            
-    # Reset feedback key for new feedback
+        last_entry = st.session_state["chat_history"][-1]  # Get the last assistant response
+        feedback_score = feedback_response["score"]  # Get the emoji (score)
+
+        # Update the session state with feedback
+        last_entry.update({"feedback": feedback_score})
+        st.session_state["chat_history"][-1] = last_entry
+
+        # Save feedback emoji to the JSON file
+        save_feedback_to_json(feedback_score)
+
+        # Log feedback to the terminal/command prompt
+        print(f"Feedback score received: {feedback_score}")
+
+    # Reset feedback key for new feedback submissions
     st.session_state["fbk"] = str(uuid.uuid4())
+
+
+# Function to handle feedback submission
+# def handle_feedback(feedback_response):
+#     """Update the chat history with feedback and log only the score to the terminal."""
+#     if st.session_state["chat_history"]:  # Ensure history exists
+#         last_entry = st.session_state["chat_history"][-1]  # Get the last message
+#         last_entry.update({"feedback": feedback_response["score"]})  # Add feedback score to the last message
+#         st.session_state["chat_history"][-1] = last_entry  # Update session state
+        
+#         # Log only the score to the terminal/command prompt
+#         print(f"Feedback score received: {feedback_response['score']}")
+            
+#     # Reset feedback key for new feedback
+#     st.session_state["fbk"] = str(uuid.uuid4())
 
 
 # Display chat messages from history
