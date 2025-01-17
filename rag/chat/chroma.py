@@ -4,8 +4,9 @@ from chromadb.config import Settings
 import uuid
 from ..indexing.contrat_to_dico import get_contrat_from_file
 from chromadb.utils import embedding_functions
+from typing import List, Dict, Any
 
-def dict_to_chroma():
+def dict_to_chroma() -> None:
     """
     Inserts documents into a Chroma collection.
     """
@@ -35,7 +36,7 @@ def dict_to_chroma():
         ids=ids
     )
 
-def chroma_query(query):
+def chroma_query(query: str) -> Dict[str, Any]:
     """
     Executes a query on a Chroma collection and returns the results.
 
