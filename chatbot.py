@@ -54,7 +54,7 @@ if "fbk" not in st.session_state:
 import json
 
 # Function to save feedback to JSON
-def save_feedback_to_json(feedback_score, filename="feedback.json"):
+def save_feedback_to_json(feedback_score: str, filename: str = "feedback.json") -> None:
     """
     Save the feedback score (emoji) to a JSON file.
     This function checks if the specified JSON file exists. If it does, it loads the existing data,
@@ -86,7 +86,7 @@ def save_feedback_to_json(feedback_score, filename="feedback.json"):
         print(f"Error saving to JSON: {e}")
 
 # Function to handle feedback submission
-def handle_feedback(feedback_response):
+def handle_feedback(feedback_response: dict) -> None:
     """
     Update the chat history with feedback and save only the emoji to a JSON file.
     Args:

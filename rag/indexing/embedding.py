@@ -3,8 +3,9 @@ import chromadb
 from rag.indexing.scrapping import get_contrat_from_file
 from chromadb.utils import embedding_functions
 import chromadb.api
+from typing import List
 
-def dict_to_chroma():
+def dict_to_chroma() -> None:
     """
     Converts documents from a specified directory into embeddings and stores them in a Chroma collection.
     This function initializes a Chroma client and uses a SentenceTransformer model to generate embeddings
@@ -20,7 +21,7 @@ def dict_to_chroma():
     Returns:
         None
     """
-    
+
     # Clear the system cache
     chromadb.api.client.SharedSystemClient.clear_system_cache()
 
@@ -37,8 +38,8 @@ def dict_to_chroma():
         embedding_function=sentence_transformer_ef
     )
 
-    documents = []
-    ids = []
+    documents: List[str] = []
+    ids: List[str] = []
 
     for i, file in enumerate(files):
         doc = get_contrat_from_file(file)

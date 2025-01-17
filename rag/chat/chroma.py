@@ -1,7 +1,8 @@
 import chromadb
 from chromadb.utils import embedding_functions
+from typing import List
 
-def chroma_query(query):
+def chroma_query(query: str) -> List:
     """
     Executes a query on a Chroma collection and returns the results.
 

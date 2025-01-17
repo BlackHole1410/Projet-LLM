@@ -1,7 +1,8 @@
 import os
 from bs4 import BeautifulSoup
+from typing import Dict, Any
 
-def get_contrat_from_file(file_path):
+def get_contrat_from_file(file_path: str) -> Dict[str, Any]:
     """
     Extracts and structures text from a specified HTML file.
 
@@ -18,7 +19,7 @@ def get_contrat_from_file(file_path):
         title = soup.title.string if soup.title else os.path.splitext(os.path.basename(file_path))[0]
         
         # Initialize the document structure
-        document_content = {
+        document_content: Dict[str, Any] = {
             'title': title,
             'paragraphs': [],
             'headings': {}
