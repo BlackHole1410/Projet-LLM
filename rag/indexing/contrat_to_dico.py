@@ -1,6 +1,9 @@
 import os
 from bs4 import BeautifulSoup
-def get_contrat_from_file(file_path):
+from typing import Dict, List, Optional
+
+
+def get_contrat_from_file(file_path: str) -> Dict[str, Optional[Dict[str, str]]]:
     """
     Extracts and structures text from a specified HTML file.
 
