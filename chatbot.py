@@ -136,7 +136,17 @@ if prompt:
 
     # Query ChromaDB for context
     context = chroma_query(prompt)
-
+    
+    titles = []
+    for document in context.get("documents", [[]])[0]:
+        try:
+            # Convertir le document en dictionnaire
+            doc_data = eval(document)
+            if "title" in doc_data:
+                titles.append(doc_data["title"])
+        except Exception as e:
+            print(f"Erreur lors de l'extraction du titre : {e}")
+            
     # Format the prompt
     def format_prompt(question: str, context: str) -> str:
         """
@@ -174,7 +184,7 @@ if prompt:
 
     # Append assistant's response to chat history
     st.session_state["chat_history"].append({"role": "assistant", "content": assistant_response})
-    st.chat_message("assistant").write(assistant_response)
+    st.chat_message("assistant").write(assistant_response + f"\n **Source : {titles[0]}**", unsafe_allow_html=True)
 
     # Feedback component for the assistant's response
     feedback_response = streamlit_feedback(
