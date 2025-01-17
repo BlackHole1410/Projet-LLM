@@ -1,9 +1,13 @@
 import streamlit as st
 import os
-import uuid  # For unique keys in feedback
+import uuid 
 from dotenv import load_dotenv
 import google.generativeai as genai
-from rag.chat.chroma import dict_to_chroma, chroma_query
+import sys
+# Add the parent directory to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from rag.chat.chroma import chroma_query
+from rag.indexing.embedding import dict_to_chroma
 from streamlit_feedback import streamlit_feedback
 
 # Load environment variables
@@ -23,6 +27,10 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "assistant", "content": "Comment puis-je vous aider ?"}
     ]
+
+# Display chat messages from history
+for msg in st.session_state["messages"]:
+    st.chat_message(msg["role"]).write(msg["content"])
 
 # Sidebar for file upload
 with st.sidebar:
@@ -47,7 +55,17 @@ import json
 
 # Function to save feedback to JSON
 def save_feedback_to_json(feedback_score, filename="feedback.json"):
-    """Save the feedback score (emoji) to a JSON file."""
+    """
+    Save the feedback score (emoji) to a JSON file.
+    This function checks if the specified JSON file exists. If it does, it loads the existing data,
+    appends the new feedback score to it, and then saves the updated data back to the file. If the
+    file does not exist, it creates a new list with the feedback score and saves it to the file.
+    Args:
+        feedback_score (str): The feedback score represented as an emoji.
+        filename (str, optional): The name of the JSON file to save the feedback to. Defaults to "feedback.json".
+    Raises:
+        Exception: If there is an error saving to the JSON file, an exception is caught and an error message is printed.
+    """
     try:
         # Check if the file exists
         if os.path.exists(filename):
@@ -69,7 +87,13 @@ def save_feedback_to_json(feedback_score, filename="feedback.json"):
 
 # Function to handle feedback submission
 def handle_feedback(feedback_response):
-    """Update the chat history with feedback and save only the emoji to a JSON file."""
+    """
+    Update the chat history with feedback and save only the emoji to a JSON file.
+    Args:
+        feedback_response (dict): A dictionary containing the feedback score (emoji).
+    Returns:
+        None
+    """
     if st.session_state["chat_history"]:  # Ensure history exists
         last_entry = st.session_state["chat_history"][-1]  # Get the last assistant response
         feedback_score = feedback_response["score"]  # Get the emoji (score)
@@ -86,22 +110,6 @@ def handle_feedback(feedback_response):
 
     # Reset feedback key for new feedback submissions
     st.session_state["fbk"] = str(uuid.uuid4())
-
-
-# Function to handle feedback submission
-# def handle_feedback(feedback_response):
-#     """Update the chat history with feedback and log only the score to the terminal."""
-#     if st.session_state["chat_history"]:  # Ensure history exists
-#         last_entry = st.session_state["chat_history"][-1]  # Get the last message
-#         last_entry.update({"feedback": feedback_response["score"]})  # Add feedback score to the last message
-#         st.session_state["chat_history"][-1] = last_entry  # Update session state
-        
-#         # Log only the score to the terminal/command prompt
-#         print(f"Feedback score received: {feedback_response['score']}")
-            
-#     # Reset feedback key for new feedback
-#     st.session_state["fbk"] = str(uuid.uuid4())
-
 
 # Display chat messages from history
 for msg in st.session_state["chat_history"]:
@@ -131,11 +139,26 @@ if prompt:
 
     # Format the prompt
     def format_prompt(question: str, context: str) -> str:
+        """
+        Formats a prompt for a question-answering assistant.
+
+        This function takes a question and a context string, and returns a formatted
+        prompt that instructs the assistant on how to answer the question using the
+        provided context. The assistant is instructed to keep the answer concise and
+        to respond with "Je ne sais pas." if the answer is not known.
+
+        Args:
+            question (str): The question to be answered.
+            context (str): The context information to be used for answering the question.
+
+        Returns:
+            str: A formatted prompt string for the assistant.
+        """
         return (
             f"You are an assistant for question-answering tasks. "
             f"Use the following pieces of retrieved context to answer the question. "
             f"If you don't know the answer, just say 'Je ne sais pas.'. "
-            f"Use up to three sentences maximum if needed, otherwise use less. Keep the answer concise. "
+            f"Use up to three sentences maximum if needed, otherwise use less. Keep the answer concise. And in French. "
             f"Question: {question}. Context: {context}."
         )
 

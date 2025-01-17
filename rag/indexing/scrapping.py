@@ -1,5 +1,6 @@
 import os
 from bs4 import BeautifulSoup
+
 def get_contrat_from_file(file_path):
     """
     Extracts and structures text from a specified HTML file.
