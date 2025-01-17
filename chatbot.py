@@ -74,8 +74,7 @@ if prompt:
         response = f"Erreur lors de la génération de la réponse : {e}"
 
     # Append assistant's response to session state and display it with hyperlink
-    file_link = f'<a href="{titles[0].replace(" ", "_")}" target="_blank">{titles[0].replace(" ", "_")}</a>'
     st.session_state["messages"].append({"role": "assistant", "content": response.text})
     st.chat_message("assistant").markdown(
-        response.text + f" Cette information vient du document : {file_link}", unsafe_allow_html=True
+        response.text + f"\n **Source : {titles[0]}**", unsafe_allow_html=True
 )
