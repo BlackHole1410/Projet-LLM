@@ -59,6 +59,4 @@ def chroma_query(query):
         query_texts=[query],
         n_results=2
     )
-    print(results)
-    # print("First document:", results["documents"][0][0])
     return results
