@@ -47,17 +47,6 @@ if "messages" not in st.session_state:
 for msg in st.session_state["messages"]:
     st.chat_message(msg["role"]).write(msg["content"])
 
-# Sidebar for file upload
-with st.sidebar:
-    uploaded_file = st.file_uploader("Choisissez un document HTML", type=["html"], accept_multiple_files=False)
-    if uploaded_file:
-        bytes_data = uploaded_file.read()
-        file_path = os.path.join('./documents', uploaded_file.name)
-        with open(file_path, 'wb') as f:
-            f.write(bytes_data)
-        st.write("Fichier téléchargé et enregistré sous :", uploaded_file.name)
-        # Reinitialize ChromaDB with the new document
-        dict_to_chroma()
 
 # Initialize session state for chat history and feedback state
 if "chat_history" not in st.session_state:
